@@ -1,7 +1,15 @@
-#![feature(plugin)]
-#[plugin] #[no_link]
-extern crate json_macros;
+extern crate hyper;
+extern crate mime;
+extern crate url;
 
+use hyper::{ Client, Url };
+use hyper::header::{ ContentLength, ContentType, UserAgent };
+use url::form_urlencoded;
+use mime::Mime;
+use mime::TopLevel::{ Application, Text };
+use mime::SubLevel::{ FormData, WwwFormUrlEncoded };
+
+type Query<'a> = Vec<(&'a str, &'a str)>;
 
 struct Params {
   username: Option<String>,
@@ -30,6 +38,17 @@ impl Params {
 }
 
 fn main() {
-   let params = Params::empty().username("foo");
-   //println!("{}", json!({"username": params.username}).pretty().to_string())
+   let params = vec![("api_token", "{TOKEN}"), ("username", "{USERNAME}")];
+   let body = form_urlencoded::serialize(params.into_iter());
+   let uri = Url::parse("http://api.justyo.co/yo/").ok().expect("invalid url");
+   let mut client = Client::new();
+   let res = client.post(uri)
+       .header(ContentType(Mime(Application, WwwFormUrlEncoded, vec![])))
+       .header(UserAgent("ro/0.1.0".to_string()))
+       .body(&*body)
+       .send();
+    match res {
+        Ok(res) => println!("Response: {} {} {}", body.len(), body, res.status),
+        Err(e) => println!("Err: {:?}", e)
+    }
 }
