@@ -4,13 +4,8 @@ name = "ro"
 version = "0.0.1"
 authors = ["softprops <d.tangren@gmail.com>"]
 
-[dependencies.hyper]
-git = "https://github.com/hyperium/hyper"
 
 [dependencies]
-rustc-serialize = "0.2"
-mime = "*"
-
-# http://servo.github.io/rust-url/url/index.html
-[dependencies.url]
-url = "https://github.com/servo/rust-url"
+hyper = "0.6"
+rustc-serialize = "0.3"
+url = "0.2"
